@@ -3,15 +3,10 @@ import { gql } from '@apollo/client';
 export const GetAllTransactions = gql`
   query GetAllTransactions {
     getAllTransactions {
-      gasLimit
-      gasPrice
+      hash
       to
       from
       value
-      data
-      chainId
-      hash
-      receipt
     }
   }
 `;
