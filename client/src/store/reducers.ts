@@ -5,7 +5,7 @@ export interface RootState {
 
 // Initial state
 const initialState: RootState = {
-  transactions: []
+  transactions: [],
 };
 
 const reducer = (state = initialState, action: any): RootState => {

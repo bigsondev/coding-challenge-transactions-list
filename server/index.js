@@ -31,7 +31,7 @@ app.use(
   json(),
   expressMiddleware(server, {
     context: async ({ req }) => ({ token: req.headers.token }),
-  }),
+  })
 );
 
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));

@@ -7,13 +7,13 @@ export const resolvers = {
     },
     getAllTransactions: async () => {
       return await Transaction.find();
-    }
+    },
   },
   Mutation: {
     addTransaction: async (_, { transaction }) => {
       const newTransaction = new Transaction(transaction);
       await newTransaction.save();
       return newTransaction;
-    }
-  }
+    },
+  },
 };

@@ -12,7 +12,7 @@ const transactionSchema = new mongoose.Schema({
   hash: String,
   r: String,
   s: String,
-  v: String
+  v: String,
 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
