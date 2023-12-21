@@ -12,6 +12,9 @@ import { Action, Actions, SendTransactionPayload } from '../types';
 import { SaveTransaction } from '../queries';
 import { navigate } from '../components/NaiveRouter';
 
+// In the future, when there is more modals:
+// 1. Keep them in "JS implementation" and maybe store in redux
+// 2. To be easily accessible in sagas
 const closeHsModal = () => {
   const modal = document.getElementById('hs-basic-modal');
 
@@ -20,6 +23,9 @@ const closeHsModal = () => {
   }
 };
 
+// This could utilize 3 standard actions, SEND, ERROR, SUCCESS
+// To be able to handle errors, and the other actions rather than having
+// everything in this file
 function* sendTransaction(action: Action<SendTransactionPayload>) {
   // this could have been passed along in a more elegant fashion,
   // but for the purpouses of this scenario it's good enough
