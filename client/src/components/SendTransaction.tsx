@@ -1,22 +1,56 @@
-import React, { useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import { Actions } from '../types';
+import { JsonRpcProvider } from 'ethers';
+
+interface SendTransactionForm {
+  recipient: string;
+  amount: number;
+}
+
+const validationSchema = yup
+  .object({
+    recipient: yup.string().required(),
+    amount: yup.number().min(1).required(),
+  })
+  .required();
+
+const initialValues = { recipient: '', amount: 1000000000000000000 };
 
 const SendTransaction: React.FC = () => {
+  const [accountAddresses, setAccountAddresses] = useState<string[]>([]);
   const dispatch = useDispatch();
-  const { handleSubmit } = useForm();
 
-  const onSubmit = (data: any) => {
-    console.log('Data: ', data);
-  };
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      const provider = new JsonRpcProvider('http://localhost:8545');
 
-  const handleDispatch = useCallback(() => {
+      const accountAddresses = (await provider.listAccounts()).map((account) => account.address);
+      setAccountAddresses(accountAddresses);
+    };
+
+    fetchAccounts();
+  }, []);
+
+  const { handleSubmit, register } = useForm<SendTransactionForm>({
+    resolver: yupResolver(validationSchema),
+    mode: 'onSubmit',
+    defaultValues: initialValues,
+  });
+
+  const onSubmit = (data: SendTransactionForm) => {
     dispatch({
       type: Actions.SendTransaction,
+      payload: {
+        recipient: data.recipient,
+        amount: data.amount,
+      },
     });
-  }, [dispatch]);
+  };
 
   return (
     <>
@@ -72,22 +106,30 @@ const SendTransaction: React.FC = () => {
                 <label htmlFor="input-recipient" className="block text-sm font-bold my-2">
                   Recipient:
                 </label>
-                <input
-                  type="text"
+                <select
                   id="input-recipient"
-                  className="opacity-70 pointer-events-none py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
-                  placeholder="Recipient Address"
-                  disabled
-                />
+                  className="opacity-70 py-3 px-4 block bg-gray-50 border border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
+                  required
+                  {...register('recipient')}
+                >
+                  <option value="">Select Recipient</option>
+                  {accountAddresses.map((address, index) => (
+                    <option key={index} value={address}>
+                      {address}
+                    </option>
+                  ))}
+                </select>
                 <label htmlFor="input-amount" className="block text-sm font-bold my-2">
                   Amount:
                 </label>
                 <input
                   type="number"
                   id="input-amount"
-                  className="opacity-70 pointer-events-none py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
+                  className="opacity-70 py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
                   placeholder="Amount"
-                  disabled
+                  required
+                  minLength={1}
+                  {...register('amount')}
                 />
               </div>
               <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
@@ -99,9 +141,8 @@ const SendTransaction: React.FC = () => {
                   Close
                 </button>
                 <button
-                  type="button"
-                  onClick={handleDispatch}
-                  className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm"
+                  type="submit"
+                  className={`py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold text-sm bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all`}
                 >
                   Send
                 </button>

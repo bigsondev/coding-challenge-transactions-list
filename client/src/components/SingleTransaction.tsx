@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { GetSingleTransaction } from '../queries';
 import { SingleTransactionData } from '../types';
 import { navigate } from './NaiveRouter';
+import { weiToEther } from '../utils/converters';
 
 interface SingleTransactionProps {
   id: string | null;
@@ -65,7 +66,7 @@ const SingleTransaction: React.FC<SingleTransactionProps> = ({ id }) => {
             <span className="font-bold">Recipient Address:</span> {to}
           </p>
           <p>
-            <span className="font-bold">Amount:</span> {value} ETH
+            <span className="font-bold">Amount:</span> {weiToEther(value)} ETH
           </p>
         </div>
       </div>
